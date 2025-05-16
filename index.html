@@ -3,40 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Langflow Test</title>
+    <title>Simple Langflow Chat</title>
+    <style>
+        #chat-container {
+            width: 400px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        #user-input {
+            width: 300px;
+            padding: 8px;
+            margin-right: 5px;
+        }
+        button {
+            padding: 8px 15px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Test Langflow API</h1>
-    <button id="sendRequest">Send Request</button>
-    <div id="response"></div>
+    <h1>Simple Langflow Chat</h1>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+    </div>
+    <div>
+        <input type="text" id="user-input" placeholder="Enter your message">
+        <button id="sendButton">Send</button>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const sendRequestButton = document.getElementById('sendRequest');
-            const responseDiv = document.getElementById('response');
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('sendButton');
 
-            sendRequestButton.addEventListener('click', async () => {
-                try {
-                    const response = await fetch('/api', { // Assuming your Vercel API endpoint is at /api
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({}) // You can adjust the body if needed
-                    });
+            sendButton.addEventListener('click', async () => {
+                const message = userInput.value.trim();
+                if (message) {
+                    appendMessage('You', message);
+                    userInput.value = '';
 
-                    if (!response.ok) {
-                        const error = await response.json();
-                        responseDiv.textContent = `Error: ${error.message || 'Something went wrong'}`;
-                        return;
+                    try {
+                        const response = await fetch('/api', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                input_value: message,
+                                output_type: 'chat',
+                                input_type: 'chat'
+                                // session_id will be generated on the server
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json();
+                            appendMessage('Error', error.message || 'Something went wrong');
+                            return;
+                        }
+
+                        const data = await response.json();
+                        if (data && data.output) {
+                            appendMessage('Langflow', data.output);
+                        } else {
+                            appendMessage('Langflow', 'No response received.');
+                        }
+
+                    } catch (error) {
+                        appendMessage('Error', `Fetch error: ${error.message}`);
                     }
-
-                    const data = await response.json();
-                    responseDiv.textContent = JSON.stringify(data, null, 2); // Display formatted JSON
-                } catch (error) {
-                    responseDiv.textContent = `Fetch error: ${error.message}`;
                 }
             });
+
+            function appendMessage(sender, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = `${sender}: ${text}`;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+            }
         });
     </script>
 </body>

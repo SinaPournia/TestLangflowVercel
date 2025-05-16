@@ -13,6 +13,21 @@
             height: 300px;
             overflow-y: auto;
         }
+        #chat-messages {
+            padding: 5px;
+        }
+        .user-message {
+            color: blue;
+            margin-bottom: 5px;
+        }
+        .langflow-message {
+            color: green;
+            margin-bottom: 5px;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 5px;
+        }
         #user-input {
             width: 300px;
             padding: 8px;
@@ -42,7 +57,7 @@
             sendButton.addEventListener('click', async () => {
                 const message = userInput.value.trim();
                 if (message) {
-                    appendMessage('You', message);
+                    appendMessage('You', message, 'user-message');
                     userInput.value = '';
 
                     try {
@@ -52,7 +67,7 @@
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                input_value: message, // Send the user's message
+                                input_value: message,
                                 output_type: 'chat',
                                 input_type: 'chat'
                                 // session_id will be generated on the server
@@ -61,26 +76,27 @@
 
                         if (!response.ok) {
                             const error = await response.json();
-                            appendMessage('Error', error.message || 'Something went wrong');
+                            appendMessage('Error', error.message || 'Something went wrong', 'error-message');
                             return;
                         }
 
                         const data = await response.json();
                         if (data && data.output) {
-                            appendMessage('Langflow', data.output);
+                            appendMessage('Langflow', data.output, 'langflow-message');
                         } else {
-                            appendMessage('Langflow', 'No response received.');
+                            appendMessage('Langflow', 'No response received.', 'langflow-message');
                         }
 
                     } catch (error) {
-                        appendMessage('Error', `Fetch error: ${error.message}`);
+                        appendMessage('Error', `Fetch error: ${error.message}`, 'error-message');
                     }
                 }
             });
 
-            function appendMessage(sender, text) {
+            function appendMessage(sender, text, className) {
                 const messageDiv = document.createElement('div');
                 messageDiv.textContent = `${sender}: ${text}`;
+                messageDiv.classList.add(className);
                 chatMessages.appendChild(messageDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
             }

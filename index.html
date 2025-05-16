@@ -1,36 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Stefan Graf Chat Test</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4; /* Optional: A light background color */
-        }
-        .embedded-chat-wrapper {
-            width: 400px; /* Adjust as needed */
-            height: 600px; /* Adjust as needed */
-            border: 1px solid #ccc;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            background-color: white; /* Optional: Background for the chat widget */
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langflow Test</title>
 </head>
 <body>
-    <div class="embedded-chat-wrapper">
-        <script
-            src="https://cdn.jsdelivr.net/gh/logspace-ai/langflow-embedded-chat@v1.0.7/dist/build/static/js/bundle.min.js">
-        </script>
-        <langflow-chat
-            window_title="Stefan Graf"
-            flow_id="31e780e0-3529-4e67-a60f-5f778a28e8b1"
-            host_url="https://langflow.dev.aiprojectx.de"
-            api_key="sk-2jBkPki_UoR35ofcH2aH4D52KNmlZjwExNNbv8kVhxI">
-        </langflow-chat>
-    </div>
+    <h1>Test Langflow API</h1>
+    <button id="sendRequest">Send Request</button>
+    <div id="response"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sendRequestButton = document.getElementById('sendRequest');
+            const responseDiv = document.getElementById('response');
+
+            sendRequestButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api', { // Assuming your Vercel API endpoint is at /api
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({}) // You can adjust the body if needed
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        responseDiv.textContent = `Error: ${error.message || 'Something went wrong'}`;
+                        return;
+                    }
+
+                    const data = await response.json();
+                    responseDiv.textContent = JSON.stringify(data, null, 2); // Display formatted JSON
+                } catch (error) {
+                    responseDiv.textContent = `Fetch error: ${error.message}`;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

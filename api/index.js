@@ -16,10 +16,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'LANGFLOW_API_KEY environment variable not found.' });
     }
 
-    console.log('Request Body:', req.body); // Added logging
+    console.log('Request Body:', req.body); // Keep this for now for debugging
 
     try {
-      const body = JSON.parse(req.body);
+      const body = req.body; // Access req.body directly as a JavaScript object
       const userMessage = body.input_value;
 
       const sessionId = uuidv4();

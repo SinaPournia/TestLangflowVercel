@@ -5,37 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Langflow Chat</title>
     <style>
-        #chat-container {
-            width: 400px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            height: 300px;
-            overflow-y: auto;
-        }
-        #chat-messages {
-            padding: 5px;
-        }
-        .user-message {
-            color: blue;
-            margin-bottom: 5px;
-        }
-        .langflow-message {
-            color: green;
-            margin-bottom: 5px;
-        }
-        .error-message {
-            color: red;
-            margin-bottom: 5px;
-        }
-        #user-input {
-            width: 300px;
-            padding: 8px;
-            margin-right: 5px;
-        }
-        button {
-            padding: 8px 15px;
-        }
+        /* ... (your existing styles) ... */
     </style>
 </head>
 <body>
@@ -54,6 +24,13 @@
             const userInput = document.getElementById('user-input');
             const sendButton = document.getElementById('sendButton');
 
+            // Generate a unique session ID on page load (if it doesn't exist)
+            let sessionId = sessionStorage.getItem('langflow_session_id');
+            if (!sessionId) {
+                sessionId = generateUUID();
+                sessionStorage.setItem('langflow_session_id', sessionId);
+            }
+
             sendButton.addEventListener('click', async () => {
                 const message = userInput.value.trim();
                 if (message) {
@@ -69,8 +46,8 @@
                             body: JSON.stringify({
                                 input_value: message,
                                 output_type: 'chat',
-                                input_type: 'chat'
-                                // session_id will be generated on the server
+                                input_type: 'chat',
+                                session_id: sessionId // Use the persistent session ID
                             })
                         });
 
@@ -98,7 +75,15 @@
                 messageDiv.textContent = `${sender}: ${text}`;
                 messageDiv.classList.add(className);
                 chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Simple UUID generator (for browsers that might not have crypto.randomUUID)
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
             }
         });
     </script>

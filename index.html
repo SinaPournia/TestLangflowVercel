@@ -155,7 +155,9 @@
                 </div>
         </div>
         <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Ask me anything...">
+            <label for="sessionIdInput" class="text-sm text-gray-400">Session ID (Optional):</label>
+            <input type="text" id="sessionIdInput" placeholder="Leave blank for auto-generate" class="mr-2">
+            <input type="text" id="user-input" placeholder="Ask me anything..." class="flex-grow">
             <button id="sendButton">Send</button>
         </div>
     </div>
@@ -167,13 +169,13 @@
             const sendButton = document.getElementById('sendButton');
             const chatContainer = document.getElementById('chat-container');
             const generationTimeDisplay = document.getElementById('generation-time');
+            const sessionIdInput = document.getElementById('sessionIdInput'); // Get the new input element
 
             let sessionId = sessionStorage.getItem('langflow_session_id');
 
-            // Generate a new session ID only if one doesn't exist in sessionStorage
+            // Generate initial session ID if not present
             if (!sessionId) {
-                // sessionId = generateUUID();
-                sessionId = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+                sessionId = generateUUID();
                 sessionStorage.setItem('langflow_session_id', sessionId);
             }
 
@@ -187,6 +189,10 @@
                     startTime = performance.now();
                     generationTimeDisplay.textContent = '';
 
+                    // Get the manually entered session ID, if any
+                    const manualSessionId = sessionIdInput.value.trim();
+                    const currentSessionId = manualSessionId || sessionId; // Use manual if provided, otherwise use the stored one
+
                     fetch('/api', {
                         method: 'POST',
                         headers: {
@@ -196,7 +202,7 @@
                             input_value: message,
                             output_type: 'chat',
                             input_type: 'chat',
-                            session_id: sessionId // Use the persistent sessionId
+                            session_id: currentSessionId // Use the determined session ID
                         })
                     })
                     .then(response => {
@@ -233,7 +239,6 @@
                     });
                 }
             }
-
 
             sendButton.addEventListener('click', sendMessage);
 

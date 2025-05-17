@@ -18,8 +18,8 @@ def application(environ, start_response):
             request_body = environ['wsgi.input'].read().decode('utf-8')
             data = json.loads(request_body)
             user_message = data.get('input_value')
-            # session_id = data.get('session_id')
-            session_id = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+            session_id = data.get('session_id')
+            # session_id = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
             langflow_api_key = os.environ.get('LANGFLOW_API_KEY')
             if not langflow_api_key:

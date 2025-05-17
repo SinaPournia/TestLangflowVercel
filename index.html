@@ -36,6 +36,7 @@
             padding: 0.5rem;
             text-sm;
             text-align: center;
+            margin-bottom: 0.5rem; /* Added margin */
         }
 
         #chat-container {
@@ -145,6 +146,30 @@
             border-top: 1px solid #424242; /* Darker border */
             background-color: #1e1e1e; /* Dark input area background */
         }
+
+        .session-id-input-area { /* New style for the session ID input area */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem; /* Added margin */
+        }
+
+        #sessionIdInput {
+            padding: 0.5rem;
+            border: 1px solid #424242;
+            border-radius: 0.375rem;
+            font-family: inherit;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            width: 100%; /* Make it take more space */
+            max-width: 200px; /* Limit its maximum width */
+        }
+
+        #sessionIdInput:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 0 0.2rem rgba(100, 181, 246, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -155,8 +180,10 @@
                 </div>
         </div>
         <div class="chat-input-area">
-            <label for="sessionIdInput" class="text-sm text-gray-400">Session ID (Optional):</label>
-            <input type="text" id="sessionIdInput" placeholder="Leave blank for auto-generate" class="mr-2">
+            <div class="session-id-input-area">
+                <label for="sessionIdInput" class="text-sm text-gray-400">Session ID (Optional):</label>
+                <input type="text" id="sessionIdInput" placeholder="Leave blank for auto-generate" class="mr-2">
+            </div>
             <input type="text" id="user-input" placeholder="Ask me anything..." class="flex-grow">
             <button id="sendButton">Send</button>
         </div>
@@ -178,6 +205,9 @@
                 sessionId = generateUUID();
                 sessionStorage.setItem('langflow_session_id', sessionId);
             }
+
+            // Set the initial session ID in the input field (for user to see/edit)
+            sessionIdInput.value = sessionId;
 
             let startTime;
 

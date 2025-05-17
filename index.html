@@ -206,8 +206,16 @@
                         const endTime = performance.now(); // Record end time
                         const generationTime = ((endTime - startTime) / 1000).toFixed(2); // Calculate time in seconds
                         generationTimeDisplay.textContent = `Generated in ${generationTime} seconds`;
-                        if (data && data.output) {
-                            appendMessage('Langflow', data.output, 'langflow-message');
+                        let langflowOutput = null;
+                        if (data && data.outputs && data.outputs.length > 0 &&
+                            data.outputs[0].outputs && data.outputs[0].outputs.length > 0 &&
+                            data.outputs[0].outputs[0].results && data.outputs[0].outputs[0].results.message &&
+                            data.outputs[0].outputs[0].results.message.data && data.outputs[0].outputs[0].results.message.data.text) {
+                            langflowOutput = data.outputs[0].outputs[0].results.message.data.text;
+                        }
+
+                        if (langflowOutput) {
+                            appendMessage('Langflow', langflowOutput, 'langflow-message');
                         } else {
                             appendMessage('Langflow', 'No response received.', 'langflow-message');
                         }
@@ -221,7 +229,8 @@
                     });
                 }
             }
-
+ 
+            
             sendButton.addEventListener('click', sendMessage);
 
             userInput.addEventListener('keypress', (event) => {

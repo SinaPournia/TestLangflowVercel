@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
- <style>
+<style>
         body {
             font-family: 'Google Sans', sans-serif;
             background-color: #121212; /* Dark background */
@@ -166,11 +166,15 @@
             const userInput = document.getElementById('user-input');
             const sendButton = document.getElementById('sendButton');
             const chatContainer = document.getElementById('chat-container');
-            const generationTimeDisplay = document.getElementById('generation-time'); // Get the new element
+            const generationTimeDisplay = document.getElementById('generation-time');
 
-            // Generate a new session ID on every page load
-            const sessionId = generateUUID();
-            sessionStorage.setItem('langflow_session_id', sessionId);
+            let sessionId = sessionStorage.getItem('langflow_session_id');
+
+            // Generate a new session ID only if one doesn't exist in sessionStorage
+            if (!sessionId) {
+                sessionId = generateUUID();
+                sessionStorage.setItem('langflow_session_id', sessionId);
+            }
 
             let startTime;
 
@@ -179,8 +183,8 @@
                 if (message) {
                     appendMessage('You', message, 'user-message');
                     userInput.value = '';
-                    startTime = performance.now(); // Record start time
-                    generationTimeDisplay.textContent = ''; // Clear previous time
+                    startTime = performance.now();
+                    generationTimeDisplay.textContent = '';
 
                     fetch('/api', {
                         method: 'POST',
@@ -191,7 +195,7 @@
                             input_value: message,
                             output_type: 'chat',
                             input_type: 'chat',
-                            session_id: sessionId // Use the newly generated sessionId
+                            session_id: sessionId // Use the persistent sessionId
                         })
                     })
                     .then(response => {
@@ -203,13 +207,12 @@
                         return response.json();
                     })
                     .then(data => {
-                        const endTime = performance.now(); // Record end time
-                        const generationTime = ((endTime - startTime) / 1000).toFixed(2); // Calculate time in seconds
+                        const endTime = performance.now();
+                        const generationTime = ((endTime - startTime) / 1000).toFixed(2);
                         generationTimeDisplay.textContent = `Generated in ${generationTime} seconds`;
                         let langflowOutput = null;
                         if (data && data.outputs && data.outputs.length > 0 &&
-                            data.outputs[0].outputs && data.outputs[0].outputs.length > 0 &&
-                            data.outputs[0].outputs[0].results && data.outputs[0].outputs[0].results.message &&
+                            data.outputs[0].outputs && data.outputs[0].outputs[0].results && data.outputs[0].outputs[0].results.message &&
                             data.outputs[0].outputs[0].results.message.data && data.outputs[0].outputs[0].results.message.data.text) {
                             langflowOutput = data.outputs[0].outputs[0].results.message.data.text;
                         }
@@ -229,8 +232,8 @@
                     });
                 }
             }
- 
-            
+
+
             sendButton.addEventListener('click', sendMessage);
 
             userInput.addEventListener('keypress', (event) => {

@@ -172,7 +172,8 @@
 
             // Generate a new session ID only if one doesn't exist in sessionStorage
             if (!sessionId) {
-                sessionId = generateUUID();
+                // sessionId = generateUUID();
+                sessionId = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
                 sessionStorage.setItem('langflow_session_id', sessionId);
             }
 

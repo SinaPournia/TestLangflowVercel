@@ -82,3 +82,6 @@ def application(environ, start_response):
         headers = {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}
         start_response(status, list(headers.items()))
         return [json.dumps({'error': 'Method Not Allowed'}).encode('utf-8')]
+    
+
+    
